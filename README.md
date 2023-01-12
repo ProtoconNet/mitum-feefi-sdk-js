@@ -62,7 +62,7 @@ $ npm test
 |-|[airdrop-close](#airdrop-close)|
 |5|[Generate seal](#generate-seal)|
 |+|[Appendix](#appendix)|
-|+|[License])(#license)|
+|+|[License](#license)|
 
 To set the mitum version of all hints and the network id, refer to [Set version of hints](#set-version-of-hints) and [Set network id of operations](#set-network-id-of-operations).
 
