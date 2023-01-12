@@ -20,13 +20,35 @@ $ npm --version
 8.19.1
 ```
 
+Before installing __mitum-feefi-sdk__, if you cannot install [mitum-sdk](https://github.com/ProtoconNet/mitum-sdk-js) using npm, you must install it locally first.
+
+```sh
+$ git clone https://github.com/ProtoconNet/mitum-sdk-js
+
+$ cd mitum-sdk-js
+
+$ npm i
+
+$ npm i -g
+```
+
 You can install this package locally using this command:
 
 ```sh
+$ git clone https://github.com/ProtoconNet/mitum-feefi-sdk-js
+
+$ cd mitum-feefi-sdk-js
+
 $ npm i
 ```
 
-You can install __mitum-feefi-sdk__ using this command:
+Then, if you installed [mitum-sdk](https://github.com/ProtoconNet/mitum-sdk-js) locally, run the following command:
+
+```sh
+$ npm link mitum-sdk
+```
+
+~~You can install __mitum-feefi-sdk__ using this command:~~ Not yet published
 
 ```sh
 $ npm i mitum-feefi-sdk
