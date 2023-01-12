@@ -253,7 +253,7 @@ __Feefi__ can handle a total of 7 operations.
 
 See [Appendix](#appendix) for other instructions on how to use `Operation`.
 
-# pool-register
+### pool-register
 
 __pool-register__ is an operation to register a pool in a contract account.
 
@@ -277,7 +277,7 @@ const operation = new Operation(fact, memo, []);
 operation.sign(senderPrivate);
 ```
 
-# pool-policy-updater
+### pool-policy-updater
 
 __pool-policy-updater__ is an operation to update a pool policy.
 
@@ -302,7 +302,7 @@ const operation = new Operation(fact, memo, []);
 operation.sign(senderPrivate);
 ```
 
-# pool-deposits
+### pool-deposits
 
 __pool-deposits__ is an operation to deposit an amount in a pool.
 
@@ -325,7 +325,7 @@ const operation = new Operation(fact, memo, []);
 operation.sign(senderPrivate);
 ```
 
-# pool-withdraw
+### pool-withdraw
 
 __pool-withdraw__ is an operation to withdraw the amount from the pool.
 
@@ -349,7 +349,7 @@ const operation = new Operation(fact, memo, []);
 operation.sign(senderPrivate);
 ```
 
-# airdrop-register
+### airdrop-register
 
 __airdrop-register__ is an operation to for registering airdrops.
 
@@ -375,7 +375,7 @@ const operation = new Operation(fact, memo, []);
 operation.sign(senderPrivate);
 ```
 
-# airdrop-withdraw
+### airdrop-withdraw
 
 __airdrop-withdraw__ is an operation for withdrawing from airdrop.
 
@@ -398,7 +398,7 @@ const operation = new Operation(fact, memo, []);
 operation.sign(senderPrivate);
 ```
 
-# airdrop-close
+### airdrop-close
 
 __airdrop-close__ is an operation to close airdrop.
 
