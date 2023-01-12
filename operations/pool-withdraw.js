@@ -14,25 +14,38 @@ import {
 	EC_INVALID_ITEM,
 } from "../base/error.js";
 
-const { error, assert } = err;
+const { assert } = err;
 
 export class PoolWithdrawFact extends Fact {
-	constructor(
-		token,
-		sender,
-		target,
-		initFee,
-		incomeCid,
-		outlayCid,
-		currency
-	) {
-		super(HINT_POOL_DEPOSITS_OPERATION_FACT, token);
+	constructor(token, sender, pool, incomeCid, outlayCid, amounts) {
+		super(HINT_POOL_WITHDRAW_OPERATION_FACT, token);
 		this.sender = new Address(sender);
-		this.target = new Address(target);
-		this.initFee = new Big(initFee);
+		this.pool = new Address(pool);
 		this.incomeCid = new CurrencyID(incomeCid);
 		this.outlayCid = new CurrencyID(outlayCid);
-		this.currency = new CurrencyID(currency);
+
+		assert(Array.isArray(amounts), err.type(EC_INVALID_ITEM, "not Array"));
+		assert(
+			amounts.length > 0 && amounts.length <= MAX_AMOUNTS_IN_ITEM,
+			err.range(EC_INVALID_AMOUNTS, "array size out of range")
+		);
+
+		const carr = amounts.map((amount) => {
+			assert(
+				amount instanceof Amount,
+				err.instance(EC_INVALID_AMOUNT, "not Amount instance")
+			);
+
+			return amount.currency.toString();
+		});
+		const cset = new Set(carr);
+
+		assert(
+			carr.length === cset.size,
+			err.duplicate(EC_INVALID_ITEM, "duplicate amounts in currency item")
+		);
+
+		this.amounts = amounts;
 		this.hash = this.hashing();
 	}
 
@@ -40,11 +53,12 @@ export class PoolWithdrawFact extends Fact {
 		return Buffer.concat([
 			this.token.bytes(),
 			this.sender.bytes(),
-			this.target.bytes(),
-			this.initFee.bytes(),
+			this.pool.bytes(),
 			this.incomeCid.bytes(),
 			this.outlayCid.bytes(),
-			this.currency.bytes(),
+			Buffer.concat(
+				this.amounts.sort(util.sortBuf).map((amt) => amt.bytes())
+			),
 		]);
 	}
 
@@ -54,13 +68,14 @@ export class PoolWithdrawFact extends Fact {
 			hash: bs58.encode(this.hash),
 			token: this.token.toString(),
 			sender: this.sender.toString(),
-			target: this.target.toString(),
-			initialfee: this.initFee.toString(),
+			pool: this.pool.toString(),
 			incomecid: this.incomeCid.toString(),
 			outlaycid: this.outlayCid.toString(),
-			currency: this.currency.toString(),
+			amounts: this.amounts
+				.sort(util.sortBuf)
+				.map((amount) => amount.dict()),
 		};
-    }
+	}
 
 	get opHint() {
 		return HINT_POOL_WITHDRAW_OPERATION;

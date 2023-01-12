@@ -1,12 +1,11 @@
 import bs58 from "bs58";
 
-import { Fact, Address, Big, CurrencyID, Amount } from "mitum-sdk";
+import { Fact, Address, Big, CurrencyID } from "mitum-sdk";
 
 import {
 	HINT_POOL_DEPOSITS_OPERATION,
 	HINT_POOL_DEPOSITS_OPERATION_FACT,
 } from "../alias/operations.js";
-import { EC_INVALID_AMOUNT } from "../base/error.js";
 
 export class PoolDepositsFact extends Fact {
 	constructor(token, sender, target, incomeCid, outlayCid, amount) {
@@ -15,13 +14,7 @@ export class PoolDepositsFact extends Fact {
 		this.target = new Address(target);
 		this.incomeCid = new CurrencyID(incomeCid);
 		this.outlayCid = new CurrencyID(outlayCid);
-
-		assert(
-			amount instanceof Amount,
-			error.instance(EC_INVALID_AMOUNT, "not Amount instance")
-		);
-
-		this.amount = amount;
+		this.amount = new Big(amount);
 
 		this.hash = this.hashing();
 	}

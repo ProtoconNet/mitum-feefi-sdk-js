@@ -15,18 +15,18 @@ import {
 } from "../alias/operations.js";
 import { EC_IMPOSSIBLE_TIMELINE, EC_INVALID_AMOUNT } from "../base/error.js";
 
-const { error, assert } = err;
+const { assert } = err;
 
 export class AirdropRegisterFact extends Fact {
 	constructor(
 		token,
 		sender,
 		target,
+		incomeCid,
+		outlayCid,
 		start,
 		end,
-		amount,
-		incomeCid,
-		outlayCid
+		amount
 	) {
 		super(HINT_AIRDROP_REGISTER_OPERATION_FACT, token);
 		this.sender = new Address(sender);
@@ -37,15 +37,12 @@ export class AirdropRegisterFact extends Fact {
 
 		assert(
 			this.start.t.getTime() < this.end.t.getTime(),
-			error.runtime(
-				EC_IMPOSSIBLE_TIMELINE,
-				`end(${end}) < start(${start})`
-			)
+			err.runtime(EC_IMPOSSIBLE_TIMELINE, `end(${end}) < start(${start})`)
 		);
 
 		assert(
 			amount instanceof Amount,
-			error.instance(EC_INVALID_AMOUNT, "not Amount instance")
+			err.instance(EC_INVALID_AMOUNT, "not Amount instance")
 		);
 
 		this.amount = amount;
@@ -58,6 +55,7 @@ export class AirdropRegisterFact extends Fact {
 		return Buffer.concat([
 			this.token.bytes(),
 			this.sender.bytes(),
+			this.target.bytes(),
 			this.start.hashBytes(),
 			this.end.hashBytes(),
 			this.amount.bytes(),

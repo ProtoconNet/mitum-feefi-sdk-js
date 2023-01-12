@@ -316,7 +316,7 @@ const senderPrivate = "KzFERQKNQbPA8cdsX5tCiCZvR4KgBou41cgtPk69XueFbaEjrczbmpr";
 const poolAddress = "5hybo4cLkcoJN9UKesbySGAm6NepYFqVh9UWTmKhoATfmca";
 const incomeCid = "MCC";
 const outlayCid = "PEN";
-const amount = new Amount("MCC", "10000"); // amount to deposit
+const amount = "10000" // amount to deposit
 
 const fact = new Feefi.PoolDepositsFact(token, senderAddress, poolAddress, incomeCid, outlayCid, amount);
 
@@ -368,7 +368,7 @@ const amount = new Amount("MCC", "10000");
 const start = "2023-01-12T02:03:40Z";
 const end = "2023-01-12T02:05:40Z";
 
-const fact = new Feefi.AirdropRegisterFact(token, senderAddress, poolAddress, start, end, amount, incomeCid, outlayCid);
+const fact = new Feefi.AirdropRegisterFact(token, senderAddress, poolAddress, incomeCid, outlayCid, start, end, amount);
 
 const memo = ""; // any string
 const operation = new Operation(fact, memo, []);

@@ -1,6 +1,6 @@
 import bs58 from "bs58";
 
-import { Fact, Address, util, err, CurrencyID, Amount } from "mitum-sdk";
+import { Fact, Address, err, CurrencyID, Amount } from "mitum-sdk";
 
 import {
 	HINT_AIRDROP_WITHDRAW_OPERATION,
@@ -9,7 +9,7 @@ import {
 
 import { EC_INVALID_AMOUNT } from "../base/error.js";
 
-const { error, assert } = err;
+const { assert } = err;
 
 export class AirdropWithdrawFact extends Fact {
 	constructor(token, sender, pool, incomeCid, outlayCid, amount) {
@@ -21,7 +21,7 @@ export class AirdropWithdrawFact extends Fact {
 
 		assert(
 			amount instanceof Amount,
-			error.instance(EC_INVALID_AMOUNT, "not Amount instance")
+			err.instance(EC_INVALID_AMOUNT, "not Amount instance")
 		);
 
 		this.amount = amount;
