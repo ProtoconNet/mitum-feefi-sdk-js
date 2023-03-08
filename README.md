@@ -85,6 +85,7 @@ $ npm test
 |-|[airdrop-withdraw](#airdrop-withdraw)|
 |-|[airdrop-close](#airdrop-close)|
 |5|[Generate seal](#generate-seal)|
+|6|[Add sign to operation json](#add-sign-to-operation-json)|
 |+|[Appendix](#appendix)|
 |+|[License](#license)|
 
@@ -450,7 +451,7 @@ __seal__ is not used in mitum2. Therefore, only operations with __sig-type: DEFA
 Here's how to create a seal:
 
 ```js
-import { Seal } from "mitum-sdk";
+import { Seal } from "mitum-feefi-sdk";
 
 const nodePrivateKey = "KzFERQKNQbPA8cdsX5tCiCZvR4KgBou41cgtPk69XueFbaEjrczbmpr";
 
@@ -458,6 +459,21 @@ const seal = new Seal([operation0, operation1, operation2, ...]); // Operation i
 seal.sign(nodePrivateKey);
 
 // seal.dict(); seal object
+```
+
+## Add sign to operation json
+
+You can add a new signature to a operation json using __Signer__ class.
+
+```js
+import { Signer } from "mitum-feefi-sdk";
+
+const json = { /* your operation json */ };
+
+const signer = new Signer("KzFERQKNQbPA8cdsX5tCiCZvR4KgBou41cgtPk69XueFbaEjrczbmpr");
+
+const general = signer.sign(json); // m1 and m2 general operation
+const m2node = signer.M2NodeSign(json, "node address"); // m2 node operation
 ```
 
 ## Appendix
@@ -469,7 +485,7 @@ To change the mitum version of every objects, add the following code to the part
 The default version is `v0.0.1`.
 
 ```js
-import { useV } from "mitum-sdk";
+import { useV } from "mitum-feefi-sdk";
 
 useV("v0.0.2");
 ```
@@ -481,7 +497,7 @@ To apply your network id to operations, add the following code to the part where
 The default id is `mitum`.
 
 ```js
-import { useId } from "mitum-sdk";
+import { useId } from "mitum-feefi-sdk";
 
 useId("mainnet");
 ```
@@ -511,7 +527,7 @@ operation.setFactSigns(/* FactSign instances */);
 `FactSign` can be created by...
 
 ```js
-import { FactSign } from "mitum-sdk";
+import { FactSign } from "mitum-feefi-sdk";
 
 const m1fs = new M1FactSign(/* signer */, /* signature; buffer */, /* signed_at */);
 const m2fs = new M2FactSign(/* signer */, /* signature; buffer */, /* signed_at */);
