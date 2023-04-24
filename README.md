@@ -14,10 +14,10 @@ This project has been developed in the following environments:
 
 ```sh
 $ node --version
-v18.9.0
+v19.8.1
 
 $ npm --version
-8.19.1
+9.5.1
 ```
 
 Before installing __mitum-feefi-sdk__, if you cannot install [mitum-sdk](https://github.com/ProtoconNet/mitum-sdk-js) using npm, you must install it locally first.
@@ -58,7 +58,7 @@ $ npm i mitum-feefi-sdk
 
 ## Test
 
-Before testing, check `TEST_ID`, `TEST_NODE`, `TEST_GENESIS`, and `TEST_ACCOUNT` in [mitum.config.js](mitum.config.js).
+Before testing, check `TEST_ID`, `TEST_NODE`, `TEST_GENESIS`, `TEST_ACCOUNT`, and etc in [esm/mitum.config.js](mitum.config.js).
 
 You can test __mitum-feefi-sdk__ using this command:
 
@@ -95,8 +95,8 @@ To set the mitum version of all hints and the network id, refer to [Set version 
 
 __mitum-feefi-sdk__ supports two signature methods:
 
-- mitum1: v1
-- mitum2: v2
+- mitum1: m1 (btc)
+- mitum2: m2 (btc, ether)
 
 You can generate key pairs in the following ways:
 
@@ -104,29 +104,39 @@ You can generate key pairs in the following ways:
 * Generate a KeyPair from a private key
 * Generate a KeyPair from a seed
 
-* private key: [key]mpr
-* public key: [key]mpu 
+* btc private key: [key]mpr
+* btc public key: [key]mpu 
+
+* ether private key: [key]epr
+* ether public key: [key]epu
 
 The following functions are prepared for key pair generation.
 
 ```js
 import { KPGen } from "mitum-feefi-sdk";
 
-// m1 key pair
+// m1 btc key pair
 var ekp1 = KPGen.random();
 var ekp2 = KPGen.randomN(/* the number of keypairs */);
 var ekp3 = KPGen.fromPrivateKey(/* string private key */);
 var ekp4 = KPGen.fromSeed(/* string seed */);
 
-// m2 key pair
+// m2 btc key pair
 const { m2 } = KPGen;
 var skp1 = m2.random();
 var skp2 = m2.randomN(/* the number of keypairs */);
 var skp3 = m2.fromPrivateKey(/* string private key */);
 var skp4 = m2.fromSeed(/* string seed */);
+
+// m2 ether key pair
+const { m2ether } = KPGen;
+var ukp1 = m2ether.random();
+var ukp2 = m2ether.randomN(/* the number of keypairs */);
+var ukp3 = m2ether.fromPrivateKey(/* string private key */);
+var ukp4 = m2ether.fromSeed(/* string seed */);
 ```
 
-_If you need a key pair for m2 signatures, use `KPGen.m2.(function)` instead of `KPGen.(function)`._
+_If you need a key pair for m2 and m2-ether signatures, use `KPGen.m2.(function)` and `KPGen.m2ether.(function)` instead of `KPGen.(function)`._
 
 ### Random KeyPair
 
@@ -204,7 +214,9 @@ In the case of a __multi-sig__ account, the sum of the weights of all public key
 Each weight and threshold range is __0 < weight, threshold <= 100__.
 An account can have up to __10 public keys__.
 
-* mitum general address: [address]mca 
+* __btc__ address: [address]mca 
+* __ether__ address: [address]eca 
+* zero address: [address]-Xmca
 
 To obtain an address from public keys, you must use the following classes:
 
@@ -213,7 +225,8 @@ import { PubKey, Keys } from "mitum-feefi-sdk";
 
 var pub = new PubKey(/* public key; string */, /* weight; number */);
 var keys = new Keys(/* pub keys; PubKey Array */, /* threshold; number */);
-var address = keys.address.toString();
+var address = keys.address.toString(); // btc
+var etherAddress = keys.etherAddress.toString(); // ether
 ```
 
 Let's do the following as an example.
@@ -256,6 +269,9 @@ const mkeys = new Keys(mpubs, threshold); // Keys[Keys] instance
 
 const address = mkeys.address // Address instance;
 const stringAddress = address.toString(); // string address
+
+const etherAddress = mkeys.etherAddress; // (ether) Address instance
+const etherStringAddress = etherAddress.toString(); // ether type string address
 ```
 
 ## Generate Currency Operations
@@ -295,9 +311,12 @@ const currency = "PEN"; // currency id for fee
 
 const fact = new Feefi.PoolRegisterFact(token, senderAddress, poolAddress, initFee, incomeCid, outlayCid, currency);
 
-const memo = ""; // any string
-const operation = new Operation(fact, memo, []);
+const operation = new Operation(fact);
 operation.sign(senderPrivate);
+
+// see appendix
+// operation.export(/* file path; string */);
+// operation.request(/* digest api address; string */, /* headers; obj */);
 ```
 
 ### pool-policy-updater
@@ -320,8 +339,7 @@ const currency = "PEN"; // currency id for fee
 const item = new Feefi.PoolPolicyUpdaterItem();
 const fact = new Feefi.PoolPolicyUpdaterFact(token, senderAddress, poolAddress, initialFee, incomeCid, outlayCid, currency);
 
-const memo = ""; // any string
-const operation = new Operation(fact, memo, []);
+const operation = new Operation(fact);
 operation.sign(senderPrivate);
 ```
 
@@ -343,8 +361,7 @@ const amount = "10000" // amount to deposit
 
 const fact = new Feefi.PoolDepositsFact(token, senderAddress, poolAddress, incomeCid, outlayCid, amount);
 
-const memo = ""; // any string
-const operation = new Operation(fact, memo, []);
+const operation = new Operation(fact);
 operation.sign(senderPrivate);
 ```
 
@@ -367,8 +384,7 @@ const am2 = new Amount("PEN", "1000");
 
 const fact = new Feefi.PoolWithdrawFact(token, senderAddress, poolAddress, incomeCid, outlayCid, [am1, am2]);
 
-const memo = ""; // any string
-const operation = new Operation(fact, memo, []);
+const operation = new Operation(fact);
 operation.sign(senderPrivate);
 ```
 
@@ -393,8 +409,7 @@ const end = "2023-01-12T02:05:40Z";
 
 const fact = new Feefi.AirdropRegisterFact(token, senderAddress, poolAddress, incomeCid, outlayCid, start, end, amount);
 
-const memo = ""; // any string
-const operation = new Operation(fact, memo, []);
+const operation = new Operation(fact);
 operation.sign(senderPrivate);
 ```
 
@@ -416,8 +431,7 @@ const amount = new Amount("MCC", "10000");
 
 const fact = new Feefi.AirdropWithdrawFact(token, senderAddress, poolAddress, incomeCid, outlayCid, amount);
 
-const memo = ""; // any string
-const operation = new Operation(fact, memo, []);
+const operation = new Operation(fact);
 operation.sign(senderPrivate);
 ```
 
@@ -439,8 +453,7 @@ const currency = "MCC"; // currency id for fee
 
 const fact = new Feefi.AirdropCloseFact(token, senderAddress, poolAddress, incomeCid, outlayCid, currency);
 
-const memo = ""; // any string
-const operation = new Operation(fact, memo, []);
+const operation = new Operation(fact);
 operation.sign(senderPrivate);
 ```
 
@@ -478,6 +491,27 @@ const m2node = signer.M2NodeSign(json, "node address"); // m2 node operation
 
 ## Appendix
 
+### Is memo essential for operation generation?
+
+For the operation of __mitum1__, the `memo` field is required and is always included in the seed bytes when the operation hash is created.
+
+If there's no `memo` field or the value is `null`, it is considered an empty string.
+
+On the other hand, for operation of __mitum2__, the `memo` field is considered an extra field and a field name other than `memo` is also available.
+
+However, in this case, when you create an operation hash, all extra fields are not included in the seed bytes at all.
+
+In other words, `memo` in __mitum1__ affects the operating hash value, but not at all in __mitum2__.
+
+When you create an operation with __mitum-sdk__, if the `memo` value is empty or if you don't need it at all, you can omit the parameter, and you only need to insert the value if necessary.
+
+For example:
+
+```js
+const operation = new Operation(fact); // memo = null || memo = ''
+const operation = new Operation(fact, memo); // memo -> not empty
+```
+
 ### Set version of hints
 
 To change the mitum version of every objects, add the following code to the part where the app is initialized or required.
@@ -512,8 +546,12 @@ However, if the operation is a node operation(not account operation) of mitum2, 
 ```js
 const operation = new Operation(/* fact, etc... */);
 
-operation.sign(/* sender's private key */, null); // mitum1(account, node), mitum2(account)
-operation.sign(/* sender's private key */, { node: "node addres" }); // mitum2(node)
+/* mitum1(account, node), mitum2(account) */
+operation.sign(/* sender's private key */);
+operation.sign(/* sender's private key */, null);
+
+/* mitum2(node) */
+operation.sign(/* sender's private key */, { node: "node addres" });
 ```
 
 * Set fact-signs without signing
